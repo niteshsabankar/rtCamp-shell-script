@@ -1,2 +1,2 @@
 # rtCamp-shell-script
-rtcamp assignment for Linux System admin 
+rtcamp assignment for Linux Server Admin
