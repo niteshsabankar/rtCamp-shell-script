@@ -2,50 +2,56 @@
 
 clear
 
-phpgrp='php5-common php5-mysqlnd php5-xmlrpc php5-curl php5-gd php5-cli php5-fpm php-pear php5-dev php5-imap php5-mcrypt'
+phpgrp='php5-mysqlnd php5-fpm'
 mysql='percona-server-server-5.6 percona-server-client-5.6'
 
-for pkg in php mysql nginx; do
+for pkg in php5 mysql-server nginx; do
 dpkg-query -s $pkg 
 	if [ $? -eq 0 ]; then								#checking exit status if package already installed
 		echo "$pkg is already installed"
 	else
-		if [ $pkg = php ]; then
-			apt-get install python-software-properties
-			add-apt-repository ppa:ondrej/php5
-			apt-get update
-			apt-get -y install $phpgrp
-		elif [ $pkg = mysql ]; then
-			apt-key adv --keyserver keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A
-			echo "deb http://repo.percona.com/apt `lsb_release -cs` main" >> /etc/apt/sources.list.d/percona.list
-			echo "deb-src http://repo.percona.com/apt `lsb_release -cs` main" >> /etc/apt/sources.list.d/percona.list
-			apt-get update
-			apt-get -y install $mysql
-		else
-			add-apt-repository ppa:nginx/stable
-			apt-get update 
-			apt-get -y install nginx
-		fi
-			if [ $? -eq 0 ]; then						#checking exit status if package installed successfully
-				echo "New Package $pkg installed Successfully"
-			else 
-				echo "Problems while installing $pkg"
-				exit
+		apt-get update
+			if [ $? -eq 0 ];then
+				echo 'Repository updated successfully'
+			else	
+				echo 'Failed to update repository, please update /etc/apt/source.list'
+				exit 1
 			fi
+				if [ $pkg = php5 ]; then
+					apt-get -y install $phpgrp
+					
+				elif [ $pkg = mysql-server ]; then
+					apt-get -y install $mysql
+					
+				else
+					apt-get -y install nginx
+					
+				fi
+					if [ $? -eq 0 ]; then
+						echo "$pkg installed successfully"
+					else
+						echo "Failed to install $pkg"
+						exit 1
+					fi
 	fi
 done
 #---------------------------------------------------------------------------------------------------------------
 
-read -p 'Please Enter Domain Name: ' b
-echo "`hostname -i`\t$b" >> /etc/hosts							#hosts Entry for domain (example.com)
+echo " Please Enter Domain Name : "
+read DMNAME
+while [ -z "$DMNAME" ];do
+echo 'Domain can not be empty, Please enter again'
+read DMNAME
+done
+echo "`hostname -i`\t$DMNAME" >> /etc/hosts							#hosts Entry for domain (example.com)
 
 #---------------------------------------------------------------------------------------------------------------
 
-echo 'server {
-        server_name example.com www.example.com;
+echo "server {
+        server_name $DMNAME;
 
-	access_log   /var/log/nginx/example.com.access.log;
-	error_log    /var/log/nginx/example.com.error.log;
+	access_log   /var/log/nginx/$DMNAME.access.log;
+	error_log    /var/log/nginx/$DMNAME.error.log;
 
         root /usr/share/nginx/html/wordpress/;
         index index.php;
@@ -55,13 +61,14 @@ echo 'server {
         }
 
         location ~ \.php$ {
-                try_files $uri =404;
-                include fastcgi_params;
-                fastcgi_pass 127.0.0.1:9000;
+                try_files \$uri =404;
+		fastcgi_pass unix:/var/run/php5-fpm.sock;
+		fastcgi_index index.php;
+		include fastcgi_params;
         }
-}' > /etc/nginx/sites-available/example.com						#nginx configuration
+}" > /etc/nginx/sites-available/$DMNAME							#nginx configuration
 
-ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/			#creating softlink in sites-enabled directory 
+ln -s /etc/nginx/sites-available/$DMNAME /etc/nginx/sites-enabled/			#creating softlink in sites-enabled directory 
 
 #-------------------------------------------------------------------------------------------------------------------
 
