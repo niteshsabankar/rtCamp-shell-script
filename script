@@ -110,9 +110,11 @@ sed -i 's/database_name_here/example.com_db/' /usr/share/nginx/html/wordpress/wp
 sed -i 's/username_here/root/' /usr/share/nginx/html/wordpress/wp-config.php			# wp-config.php DB configuration
 sed -i 's/password_here/mysql/' /usr/share/nginx/html/wordpress/wp-config.php			#
 
+chown -R www-data:www-data /usr/share/nginx/html/wordpress
+chmod -R 755 /usr/share/nginx/html/wordpress
+
 #-------------------------------------------------------------------------------------------------------------------
 
-chown -R root:root /usr/share/nginx/html/
-service nginx restart
+service nginx restart									#Just to be sure ;-)
 
-echo 'Open example.com in browser'
+echo "Open $DMNAME in browser"
