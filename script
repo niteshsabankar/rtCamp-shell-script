@@ -50,32 +50,39 @@ read DMNAME
 echo "`hostname -i`\t$DMNAME" >> /etc/hosts						#hosts Entry for domain (example.com)
 
 #---------------------------------------------------------------------------------------------------------------
+if [ -d /etc/nginx/sites-available -a /etc/nginx/sites-enabled ]; then
+	echo 'server {
+        	server_name SERVER;
 
-echo "server {
-        server_name $DMNAME;
+		access_log   /var/log/nginx/access.log;
+		error_log    /var/log/nginx/error.log;
 
-	access_log   /var/log/nginx/$DMNAME.access.log;
-	error_log    /var/log/nginx/$DMNAME.error.log;
+	   root /usr/share/nginx/html/wordpress/;
+	   index index.php;
 
-        root /usr/share/nginx/html/wordpress/;
-        index index.php;
-
-        location / {
-                try_files $uri $uri/ /index.php?$args; 
+	   location / {
+			try_files $uri $uri/ /index.php?$args; 
         }
 
-        location ~ \.php$ {
-                try_files \$uri =404;
-		fastcgi_pass unix:/var/run/php5-fpm.sock;
-		fastcgi_index index.php;
-		include fastcgi_params;
+	   location ~ \.php$ {
+	   		try_files \$uri =404;
+			fastcgi_pass unix:/var/run/php5-fpm.sock;
+			fastcgi_index index.php;
+			include fastcgi_params;
         }
-}" > /etc/nginx/sites-available/$DMNAME							#nginx configuration
+}' > /etc/nginx/sites-available/$DMNAME							#nginx configuration
 
-ln -sf /etc/nginx/sites-available/$DMNAME /etc/nginx/sites-enabled/			#creating softlink in sites-enabled directory 
-service nginx restart
-service php5-fpm restart
+		sed -i 's/SERVER/$DMNAME/' /etc/nginx/sites-available/$DMNAME
+		sed -i 's/access.log/$DMNAME.access.log/' /etc/nginx/sites-available/$DMNAME
+		sed -i 's/error.log/$DMNAME.error.log/' /etc/nginx/sites-available/$DMNAME
 
+		ln -sf /etc/nginx/sites-available/$DMNAME /etc/nginx/sites-enabled/	#creating softlink 
+		service nginx restart
+		service php5-fpm restart
+	else
+		echo 'Nginx not properly installed...'
+		exit
+	fi
 #-------------------------------------------------------------------------------------------------------------------
 
 echo 'Please Wait while downloading Wordpress...'
