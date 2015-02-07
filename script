@@ -43,7 +43,7 @@ while [ -z "$DMNAME" ];do
 echo 'Domain can not be empty, Please enter again'
 read DMNAME
 done
-echo "`hostname -i`\t$DMNAME" >> /etc/hosts							#hosts Entry for domain (example.com)
+echo "`hostname -i`\t$DMNAME" >> /etc/hosts						#hosts Entry for domain (example.com)
 
 #---------------------------------------------------------------------------------------------------------------
 
@@ -68,13 +68,27 @@ echo "server {
         }
 }" > /etc/nginx/sites-available/$DMNAME							#nginx configuration
 
-ln -s /etc/nginx/sites-available/$DMNAME /etc/nginx/sites-enabled/			#creating softlink in sites-enabled directory 
+ln -sf /etc/nginx/sites-available/$DMNAME /etc/nginx/sites-enabled/			#creating softlink in sites-enabled directory 
+service nginx restart
+service php5-fpm restart
 
 #-------------------------------------------------------------------------------------------------------------------
 
+echo 'Please Wait while downloading Wordpress...'
 wget http://wordpress.org/latest.zip --no-check-certificate				#downloading wordpress zip file
-unzip latest.zip -d /usr/share/nginx/html						#unzipping in nginx document root
-rm -rf latest.zip									#removing zip file
+	if [ $? -eq 0 ];then
+		echo 'Download complete...'
+		unzip latest.zip -d /usr/share/nginx/html				#unzipping in nginx document root
+			if [ $? -eq 0 ];then
+				echo 'successfully upzipped in /usr/share/nginx/html'
+				rm -rf latest.zip					#removing zip file
+			else
+				echo 'Error while unzippig latest.zip...'
+				exit 1
+	else
+		echo 'Downloding Failed...'
+		exit 1
+	fi
 
 #-------------------------------------------------------------------------------------------------------------------
 
