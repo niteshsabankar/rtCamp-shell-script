@@ -116,7 +116,7 @@ cp /usr/share/nginx/html/wordpress/wp-config-sample.php /usr/share/nginx/html/wo
 		sed -i 's/database_name_here/example.com_db/' /usr/share/nginx/html/wordpress/wp-config.php
 		sed -i 's/username_here/root/' /usr/share/nginx/html/wordpress/wp-config.php
 		sed -i 's/password_here/mysql/' /usr/share/nginx/html/wordpress/wp-config.php
-		sed -i 's/username_here/wpsuser/' /usr/share/nginx/html/wordpress/wp-config.ph
+		sed -i 's/username_here/wpuser/' /usr/share/nginx/html/wordpress/wp-config.ph
 	else
 		echo 'Problems while creating wp-config.php'
 		exit 1
