@@ -2,6 +2,12 @@
 
 clear
 
+if [ `whoami` != 'root' ]; then
+	echo 'You must be root to excecute this script'
+	echo 'Or else for non root user, use sudo ./script.sh command to run this script'
+	exit 1
+fi
+
 phpgrp='php5-mysqlnd php5-fpm'
 mysql='percona-server-server-5.6 percona-server-client-5.6'
 
