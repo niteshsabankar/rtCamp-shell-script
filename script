@@ -25,10 +25,8 @@ dpkg-query -s $pkg
 			fi
 				if [ $pkg = php5 ]; then
 					apt-get -y install $phpgrp
-					
 				elif [ $pkg = mysql-server ]; then
 					apt-get -y install $mysql
-					
 				else
 					apt-get -y install nginx
 				fi
