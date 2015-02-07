@@ -11,7 +11,7 @@ dpkg-query -s $pkg
 		echo "$pkg is already installed"
 	else
 		apt-get update
-			if [ $? -eq 0 ];then
+			if [ $? -eq 0 ]; then
 				echo 'Repository updated successfully'
 			else	
 				echo 'Failed to update repository, please update /etc/apt/source.list'
@@ -35,6 +35,7 @@ dpkg-query -s $pkg
 					fi
 	fi
 done
+
 #---------------------------------------------------------------------------------------------------------------
 
 echo " Please Enter Domain Name : "
@@ -76,7 +77,7 @@ service php5-fpm restart
 
 echo 'Please Wait while downloading Wordpress...'
 wget http://wordpress.org/latest.zip --no-check-certificate				#downloading wordpress zip file
-	if [ $? -eq 0 ];then
+	if [ $? -eq 0 ]; then
 		echo 'Download complete...'
 		unzip latest.zip -d /usr/share/nginx/html				#unzipping in nginx document root
 			if [ $? -eq 0 ];then
@@ -93,7 +94,7 @@ wget http://wordpress.org/latest.zip --no-check-certificate				#downloading word
 #-------------------------------------------------------------------------------------------------------------------
 
 service mysqld restart
-mysqladmin -u root password mysql							#setting mysql password for root
+mysqladmin -u root password mysql							#setting 'mysql' password for root
 mysql -u root -pmysql -e 'create database example.com_db'				#creating new database
 	if [ $? -eq 0 ]; then
 		echo 'New database created successfully...'
@@ -105,10 +106,15 @@ mysql -u root -pmysql -e 'create database example.com_db'				#creating new datab
 #-------------------------------------------------------------------------------------------------------------------
 
 cp /usr/share/nginx/html/wordpress/wp-config-sample.php /usr/share/nginx/html/wordpress/wp-config.php
-
-sed -i 's/database_name_here/example.com_db/' /usr/share/nginx/html/wordpress/wp-config.php	#
-sed -i 's/username_here/root/' /usr/share/nginx/html/wordpress/wp-config.php			# wp-config.php DB configuration
-sed -i 's/password_here/mysql/' /usr/share/nginx/html/wordpress/wp-config.php			#
+	if [ $? -eq 0 ]; then
+		sed -i 's/database_name_here/example.com_db/' /usr/share/nginx/html/wordpress/wp-config.php
+		sed -i 's/username_here/root/' /usr/share/nginx/html/wordpress/wp-config.php
+		sed -i 's/password_here/mysql/' /usr/share/nginx/html/wordpress/wp-config.php
+		sed -i 's/username_here/wordpressuser/' /usr/share/nginx/html/wordpress/wp-config.ph
+	else
+		echo 'Problems while creating wp-config.php'
+	fi
+	
 
 chown -R www-data:www-data /usr/share/nginx/html/wordpress
 chmod -R 755 /usr/share/nginx/html/wordpress
