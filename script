@@ -76,7 +76,7 @@ if [ -d /etc/nginx/sites-available -a -d /etc/nginx/sites-enabled ]; then
 	sed -i 's/access.log/$DMNAME.access.log/' /etc/nginx/sites-available/$DMNAME
 	sed -i 's/error.log/$DMNAME.error.log/' /etc/nginx/sites-available/$DMNAME
 
-	ln -sf /etc/nginx/sites-available/$DMNAME /etc/nginx/sites-enabled/	#creating softlink 
+	ln -sf /etc/nginx/sites-available/$DMNAME /etc/nginx/sites-enabled/		#creating softlink 
 	service nginx restart
 	service php5-fpm restart
 else
