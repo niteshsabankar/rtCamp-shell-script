@@ -50,7 +50,7 @@ read DMNAME
 echo "`hostname -i`\t$DMNAME" >> /etc/hosts						#hosts Entry for domain (example.com)
 
 #---------------------------------------------------------------------------------------------------------------
-if [ -d /etc/nginx/sites-available -a /etc/nginx/sites-enabled ]; then
+if [ -d /etc/nginx/sites-available -a -d /etc/nginx/sites-enabled ]; then
 	echo 'server {
         	server_name SERVER;
 
