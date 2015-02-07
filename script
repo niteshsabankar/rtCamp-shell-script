@@ -104,18 +104,18 @@ mysql -u root -pmysql -e 'create database example.com_db'				#creating new datab
 	fi
 
 #-------------------------------------------------------------------------------------------------------------------
-
+# creating wp-config for example.com_db database
 cp /usr/share/nginx/html/wordpress/wp-config-sample.php /usr/share/nginx/html/wordpress/wp-config.php
 	if [ $? -eq 0 ]; then
 		sed -i 's/database_name_here/example.com_db/' /usr/share/nginx/html/wordpress/wp-config.php
 		sed -i 's/username_here/root/' /usr/share/nginx/html/wordpress/wp-config.php
 		sed -i 's/password_here/mysql/' /usr/share/nginx/html/wordpress/wp-config.php
-		sed -i 's/username_here/wordpressuser/' /usr/share/nginx/html/wordpress/wp-config.ph
+		sed -i 's/username_here/wpsuser/' /usr/share/nginx/html/wordpress/wp-config.ph
 	else
 		echo 'Problems while creating wp-config.php'
+		exit 1
 	fi
 	
-
 chown -R www-data:www-data /usr/share/nginx/html/wordpress
 chmod -R 755 /usr/share/nginx/html/wordpress
 
