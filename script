@@ -41,10 +41,10 @@ done
 
 #---------------------------------------------------------------------------------------------------------------
 
-echo " Please Enter Domain Name : "
+echo 'Please Enter Domain Name : '
 read DMNAME
 	while [ -z "$DMNAME" ];do
-		echo 'Domain can not be empty, Please enter again'
+		echo 'Domain can not be empty, Please enter again : '
 		read DMNAME
 	done
 echo "`hostname -i`\t$DMNAME" >> /etc/hosts						#hosts Entry for domain (example.com)
