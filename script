@@ -31,7 +31,6 @@ dpkg-query -s $pkg
 					
 				else
 					apt-get -y install nginx
-					
 				fi
 					if [ $? -eq 0 ]; then
 						echo "$pkg installed successfully"
