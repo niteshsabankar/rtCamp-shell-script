@@ -6,25 +6,25 @@ phpgrp='php5-common php5-mysqlnd php5-xmlrpc php5-curl php5-gd php5-cli php5-fpm
 mysql='percona-server-server-5.6 percona-server-client-5.6'
 
 for pkg in php mysql nginx; do
-aptitude show $pkg 
+dpkg-query -s $pkg 
 	if [ $? -eq 0 ]; then								#checking exit status if package already installed
 		echo "$pkg is already installed"
 	else
 		if [ $pkg = php ]; then
-			sudo apt-get install python-software-properties
-			sudo add-apt-repository ppa:ondrej/php5
-			sudo apt-get update
-			sudo apt-get install $phpgrp
+			apt-get install python-software-properties
+			add-apt-repository ppa:ondrej/php5
+			apt-get update
+			apt-get -y install $phpgrp
 		elif [ $pkg = mysql ]; then
 			apt-key adv --keyserver keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A
 			echo "deb http://repo.percona.com/apt `lsb_release -cs` main" >> /etc/apt/sources.list.d/percona.list
 			echo "deb-src http://repo.percona.com/apt `lsb_release -cs` main" >> /etc/apt/sources.list.d/percona.list
-			sudo apt-get update
-			sudo apt-get install $mysql
+			apt-get update
+			apt-get -y install $mysql
 		else
-			sudo add-apt-repository ppa:nginx/stable
-			sudo apt-get update 
-			sudo apt-get install nginx
+			add-apt-repository ppa:nginx/stable
+			apt-get update 
+			apt-get -y install nginx
 		fi
 			if [ $? -eq 0 ]; then						#checking exit status if package installed successfully
 				echo "New Package $pkg installed Successfully"
@@ -71,7 +71,7 @@ rm -rf latest.zip									#removing zip file
 
 #-------------------------------------------------------------------------------------------------------------------
 
-sudo service mysqld restart
+service mysqld restart
 mysqladmin -u root password mysql							#setting mysql password for root
 mysql -u root -pmysql -e 'create database example.com_db'				#creating new database
 
@@ -85,7 +85,7 @@ sed -i 's/password_here/mysql/' /usr/share/nginx/html/wordpress/wp-config.php			
 
 #-------------------------------------------------------------------------------------------------------------------
 
-sudo chown -R root:root /usr/share/nginx/html/
-sudo service nginx restart
+chown -R root:root /usr/share/nginx/html/
+service nginx restart
 
 echo 'Open example.com in browser'
