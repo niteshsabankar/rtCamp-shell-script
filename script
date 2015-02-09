@@ -8,6 +8,8 @@ if [ `whoami` != 'root' ]; then
 	exit 1
 fi
 
+EXT='_db'
+
 apt-get update
 	if [ $? -eq 0 ]; then
 		echo 'Repository updated successfully'
@@ -112,20 +114,10 @@ wget http://wordpress.org/latest.zip --no-check-certificate				#downloading word
 	fi
 
 #-------------------------------------------------------------------------------------------------------------------
-
-
-	if [ $? -eq 0 ]; then
-		echo 'New database created successfully...'
-	else
-		echo 'Failed to create new database...'
-		exit 1
-	fi
-
-#-------------------------------------------------------------------------------------------------------------------
 # creating wp-config for example.com_db database
 cp /usr/share/nginx/html/wordpress/wp-config-sample.php /usr/share/nginx/html/wordpress/wp-config.php
 	if [ $? -eq 0 ]; then
-		sed -i 's/database_name_here/example.com_db/' /usr/share/nginx/html/wordpress/wp-config.php
+		sed -i "s/database_name_here/$DMNAME$EXT/" /usr/share/nginx/html/wordpress/wp-config.php
 		sed -i 's/username_here/root/' /usr/share/nginx/html/wordpress/wp-config.php
 		sed -i 's/password_here/mysql/' /usr/share/nginx/html/wordpress/wp-config.php
 		sed -i 's/username_here/wpuser/' /usr/share/nginx/html/wordpress/wp-config.ph
@@ -136,6 +128,16 @@ cp /usr/share/nginx/html/wordpress/wp-config-sample.php /usr/share/nginx/html/wo
 	
 chown -R www-data:www-data /usr/share/nginx/html/wordpress
 chmod -R 755 /usr/share/nginx/html/wordpress
+
+#-------------------------------------------------------------------------------------------------------------------
+mysql -u root -pmysql -e "create database if not exists \`$DMNAME$EXT\`; GRANT ALL PRIVILEGES ON \`$DMNAME$EXT\`.* TO 'wpuser'@'localhost' IDENTIFIED BY 'password'; FLUSH PRIVILEGES;"
+
+	if [ $? -eq 0 ]; then
+		echo 'New database created successfully...'
+	else
+		echo 'Failed to create new database...'
+		exit 1
+	fi
 
 #-------------------------------------------------------------------------------------------------------------------
 
