@@ -8,35 +8,34 @@ if [ `whoami` != 'root' ]; then
 	exit 1
 fi
 
-mysql='percona-server-server-5.6 percona-server-client-5.6'
-
-for pkg in php5-mysqlnd php5-fpm mysql-server nginx; do
+apt-get update
+	if [ $? -eq 0 ]; then
+		echo 'Repository updated successfully'
+	else	
+		echo 'Failed to update repository, please update /etc/apt/source.list'
+		exit 1
+	fi
+for pkg in php5 php5-fpm mysql-server nginx; do
 dpkg-query -s $pkg 
 	if [ $? -eq 0 ]; then								#checking exit status if package already installed
 		echo "$pkg is already installed"
 	else
-		apt-get update
+		
+		if [ $pkg = php5 ]; then
+			apt-get -y install php5
+		elif [ $pkg = php5-fpm ]; then
+			apt-get -y install php5-fpm
+		elif [ $pkg = mysql-server ]; then
+			apt-get -y mysql-server
+		else
+			apt-get -y install nginx
+		fi
 			if [ $? -eq 0 ]; then
-				echo 'Repository updated successfully'
-			else	
-				echo 'Failed to update repository, please update /etc/apt/source.list'
+				echo "$pkg installed successfully"
+			else
+				echo "Failed to install $pkg"
 				exit 1
 			fi
-				if [ $pkg = php5-mysqlnd ]; then
-					apt-get -y install php5-mysqlnd
-				elif [ $pkg = php5-fpm ]; then
-					apt-get -y install php5-fpm
-				elif [ $pkg = mysql-server ]; then
-					apt-get -y install $mysql
-				else
-					apt-get -y install nginx
-				fi
-					if [ $? -eq 0 ]; then
-						echo "$pkg installed successfully"
-					else
-						echo "Failed to install $pkg"
-						exit 1
-					fi
 	fi
 done
 
