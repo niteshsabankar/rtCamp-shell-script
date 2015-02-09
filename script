@@ -97,6 +97,7 @@ wget http://wordpress.org/latest.zip --no-check-certificate				#downloading word
 			else
 				echo 'Error while unzippig latest.zip...'
 				exit 1
+			fi
 	else
 		echo 'Downloding Failed...'
 		exit 1
