@@ -113,9 +113,7 @@ wget http://wordpress.org/latest.zip --no-check-certificate				#downloading word
 
 #-------------------------------------------------------------------------------------------------------------------
 
-service mysql restart
-mysqladmin -u root password mysql							#setting 'mysql' password for root
-mysql -u root -pmysql -e 'create database example.com_db'				#creating new database
+
 	if [ $? -eq 0 ]; then
 		echo 'New database created successfully...'
 	else
