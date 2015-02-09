@@ -11,7 +11,7 @@ fi
 EXT='_db'
 
 echo 'Updating repository, please wait...'
-apt-get update >> /dev/null 2>&1
+apt-get update
 	if [ $? -eq 0 ]; then
 		echo 'Repository updated successfully'
 	else	
@@ -27,19 +27,19 @@ dpkg-query -s $pkg >> /dev/null 2>&1
 		
 		if [ $pkg = php5 ]; then
 			echo 'Installing php5, please wait...'
-			apt-get -y install php5 >> /dev/null 2>&1
+			apt-get -y install php5
 		elif [ $pkg = php5-fpm ]; then
 			echo 'Installing php5-fpm, please wait...'
-			apt-get -y install php5-fpm >> /dev/null 2>&1
+			apt-get -y install php5-fpm
 		elif [ $pkg = mysql-server ]; then
 			#Install MySQL Server in a Non-Interactive mode.
 			debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'
 			debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'
 			echo 'Installing mysql-server, please wait...'
-			apt-get -y install mysql-server >> /dev/null 2>&1
+			apt-get -y install mysql-server
 		else
 			echo 'Installing nginx, please wait...'
-			apt-get -y install nginx >> /dev/null 2>&1
+			apt-get -y install nginx
 		fi
 			if [ $? -eq 0 ]; then
 				echo "$pkg installed successfully"
@@ -102,11 +102,11 @@ fi
 #-------------------------------------------------------------------------------------------------------------------
 
 echo 'Please Wait while downloading Wordpress...'
-wget http://wordpress.org/latest.zip --no-check-certificate >> /dev/null 2>&1		#downloading wordpress zip file
+wget http://wordpress.org/latest.zip --no-check-certificate				#downloading wordpress zip file
 	if [ $? -eq 0 ]; then
 		echo 'Download complete...'
 		unzip latest.zip -d /usr/share/nginx/html >> /dev/null 2>&1		#unzipping in nginx document root
-			if [ $? -eq 0 ];then
+			if [ $? -eq 0 ]; then
 				echo 'successfully upzipped in /usr/share/nginx/html'
 				rm -rf latest.zip					#removing zip file
 			else
@@ -124,7 +124,7 @@ cp /usr/share/nginx/html/wordpress/wp-config-sample.php /usr/share/nginx/html/wo
 	if [ $? -eq 0 ]; then
 		sed -i "s/database_name_here/$DMNAME$EXT/" /usr/share/nginx/html/wordpress/wp-config.php
 		sed -i 's/username_here/root/' /usr/share/nginx/html/wordpress/wp-config.php
-		sed -i 's/password_here/mysql/' /usr/share/nginx/html/wordpress/wp-config.php
+		sed -i 's/password_here/password/' /usr/share/nginx/html/wordpress/wp-config.php
 		sed -i 's/username_here/wpuser/' /usr/share/nginx/html/wordpress/wp-config.ph
 	else
 		echo 'Problems while creating wp-config.php'
@@ -147,6 +147,6 @@ mysql --user=root --password=root --execute="CREATE DATABASE IF NOT EXISTS \`$DM
 
 #-------------------------------------------------------------------------------------------------------------------
 
-service nginx restart	>> /dev/null 2>&1							#Just to be sure ;-)
+service nginx restart									#Just to be sure ;-)
 
 echo "Open $DMNAME in browser"
