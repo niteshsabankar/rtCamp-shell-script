@@ -33,8 +33,8 @@ dpkg-query -s $pkg >> /dev/null 2>&1
 			apt-get -y install php5-fpm >> /dev/null 2>&1
 		elif [ $pkg = mysql-server ]; then
 			#Install MySQL Server in a Non-Interactive mode.
-			debconf-set-selections <<< 'mysql-server mysql-server/root_password password mysql'
-			debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password mysql'
+			debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'
+			debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'
 			echo 'Installing mysql-server, please wait...'
 			apt-get -y install mysql-server >> /dev/null 2>&1
 		else
@@ -135,7 +135,8 @@ chown -R www-data:www-data /usr/share/nginx/html/wordpress
 chmod -R 755 /usr/share/nginx/html/wordpress
 
 #-------------------------------------------------------------------------------------------------------------------
-mysql -u root -pmysql -e "create database if not exists \`$DMNAME$EXT\`; GRANT ALL PRIVILEGES ON \`$DMNAME$EXT\`.* TO 'wpuser'@'localhost' IDENTIFIED BY 'password'; FLUSH PRIVILEGES;"
+
+mysql --user=root --password=root --execute="CREATE DATABASE IF NOT EXISTS \`$DMNAME$EXT\`; grant all on \`$DMNAME$EXT\`.* to 'wpuser'@'localhost' identified by 'password'; FLUSH PRIVILEGES;"
 
 	if [ $? -eq 0 ]; then
 		echo 'New database created successfully...'
