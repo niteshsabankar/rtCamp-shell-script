@@ -67,34 +67,41 @@ fi
 
 #---------------------------------------------------------------------------------------------------------------
 if [ -d /etc/nginx/sites-available -a -d /etc/nginx/sites-enabled ]; then
-	echo 'server {
-        	server_name SERVER;
-
-		access_log   /var/log/nginx/access.log;
-		error_log    /var/log/nginx/error.log;
-
-	   root /usr/share/nginx/html/wordpress/;
-	   index index.php;
-
-	   location / {
-			try_files $uri $uri/ /index.php?$args; 
-        }
-
-	   location ~ \.php$ {
-	   		try_files \$uri =404;
-			fastcgi_pass unix:/var/run/php5-fpm.sock;
-			fastcgi_index index.php;
-			include fastcgi_params;
-        }
-}' > /etc/nginx/sites-available/$DMNAME							#nginx configuration
+	
+	
+echo 'server {
+	listen 80;
+	
+	root /usr/share/nginx/html/wordpress/;
+	index index.php index.html index.htm;
+	
+	server_name SERVER;
+	
+	location / {
+	try_files \$uri \$uri/ /index.php?q=\$uri&\$args;
+	}
+	
+	error_page 404 /404.html;
+	
+	error_page 500 502 503 504 /50x.html;
+	location = /50x.html {
+	root /usr/share/nginx/www;
+	}
+	
+	location ~ \.php$ {
+	try_files \$uri =404;
+	fastcgi_pass unix:/var/run/php5-fpm.sock;
+	fastcgi_index index.php;
+	include fastcgi_params;
+	}
+	
+	}' > /etc/nginx/sites-available/$DMNAME							#nginx configuration
 
 	sed -i "s/SERVER/$DMNAME/" /etc/nginx/sites-available/$DMNAME
-	sed -i "s/access.log/$DMNAME.access.log/" /etc/nginx/sites-available/$DMNAME
-	sed -i "s/error.log/$DMNAME.error.log/" /etc/nginx/sites-available/$DMNAME
 
-	ln -sf /etc/nginx/sites-available/$DMNAME /etc/nginx/sites-enabled/		#creating softlink 
-	service nginx restart >> /dev/null 2>&1
-	service php5-fpm restart >> /dev/null 2>&1
+	ln -sf /etc/nginx/sites-available/$DMNAME /etc/nginx/sites-enabled/			#creating softlink 
+	service nginx restart >> /dev/null
+	service php5-fpm restart >> /dev/null
 else
 	echo 'Nginx not properly installed...'
 	exit
